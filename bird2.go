@@ -2,7 +2,6 @@ package clidecode
 
 import (
 	"net"
-	"strings"
 )
 
 // Bird2Conn represents a connection to a BIRD 2 daemon
@@ -26,34 +25,6 @@ func NewBird2ConnWithSocket(socketPath string) *Bird2Conn {
 			SocketPath: socketPath,
 		},
 	}
-}
-
-// decodeASPaths will return a slice of AS & AS-Sets from a string as-path output.
-func decodeASPaths(in string) ([]uint32, []uint32) {
-	if strings.ContainsAny(in, "{}") {
-		in = strings.Replace(in, "{", "{ ", 1)
-		in = strings.Replace(in, "}", " }", 1)
-	}
-	paths := strings.Fields(in)
-	var path, set []uint32
-
-	// Need to separate as-set
-	var isSet bool
-	for _, as := range paths {
-		if strings.ContainsAny(as, "{}") {
-			isSet = true
-			continue
-		}
-
-		switch {
-		case isSet == false:
-			path = append(path, stringToUint32(as))
-		case isSet == true:
-			set = append(set, stringToUint32(as))
-		}
-	}
-
-	return path, set
 }
 
 // GetBGPTotal returns rib, fib ipv4. rib, fib ipv6
